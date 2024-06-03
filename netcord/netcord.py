@@ -12,7 +12,7 @@ class Netcord(HTTPClient):
         client_id: str,
         client_secret: str,
         redirect_uri: str = 'http://127.0.0.1/callback',
-        scopes: str|tuple[str] = ('identify', 'email', 'guilds')
+        scopes: str | tuple[str] = ('identify', 'email', 'guilds')
     ):
         super().__init__()
 
@@ -50,7 +50,7 @@ class Netcord(HTTPClient):
         }
 
         return f'{self.authorize}?{urlencode(params, quote_via=quote)}'
-    
+
     def check_state(self, session_id: str, received_state: str):
         stored_state = self.state_storage.pop(session_id, None)
         if stored_state is None:
@@ -58,7 +58,7 @@ class Netcord(HTTPClient):
         if stored_state != received_state:
             raise ValueError('Invalid state parameter')
         return True
-    
+
     async def get_access_token(self, code: str) -> Tokens:
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 
@@ -67,10 +67,10 @@ class Netcord(HTTPClient):
             'redirect_uri': self.redirect_uri,
             'grant_type': 'authorization_code'
         }
-        
+
         return await self.fetch(
             'POST', self.token, headers, data, self.auth, Tokens)
-    
+
     async def refresh_access_token(self, refresh_token: str) -> Tokens:
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
         data = {'grant_type': 'refresh_token', 'refresh_token': refresh_token}

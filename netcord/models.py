@@ -10,7 +10,7 @@ DISCORD_CDN = 'https://cdn.discordapp.com'
 class Tokens(BaseModel):
     token_type: str
     expires_in: int
-    scope: str|list[str]
+    scope: str | list[str]
 
     access_token: str
     refresh_token: str
