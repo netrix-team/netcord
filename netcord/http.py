@@ -20,8 +20,8 @@ class HTTPClient:
                     response.raise_for_status()
                     result = await response.json(encoding='utf-8')
 
-                    logger.info(f'Successful {method} request '
-                                f'to {url} with status {response.status}')
+                    logger.info(f'Success: {response.status}; '
+                                f'{response.method} -> {response.url}')
 
                     if result is None:
                         return
@@ -35,9 +35,9 @@ class HTTPClient:
                     return result
 
         except ClientResponseError as error:
-            logger.error(f'ClientError: {error.status} - {error.message}')
-            raise
+            logger.error(
+                f'ClientError: {error.status} - {error.message}; '
+                f'{error.request_info.method} -> {error.request_info.url}')
 
         except Exception as exc:
             logger.error(f'Unknown error: {exc}')
-            raise

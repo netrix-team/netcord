@@ -19,14 +19,16 @@ class Tokens(BaseModel):
 class User(BaseModel):
     id: str
     username: str
-    email: str
 
-    avatar_url: Optional[str] = None
-    avatar_hash: Optional[str] = Field(alias='avatar', default=None)
+    bot: Optional[bool] = False
+    email: Optional[str] = None
 
-    locale: str
-    verified: bool
-    mfa_enabled: bool
+    avatar_url: str = None
+    avatar_hash: str = Field(alias='avatar', default=None)
+
+    locale: Optional[str] = None
+    verified: Optional[bool] = None
+    mfa_enabled: Optional[bool] = None
 
     @model_validator(mode='after')
     def get_user_avatar_url(self):

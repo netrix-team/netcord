@@ -11,6 +11,7 @@ class Netcord(HTTPClient):
         self,
         client_id: str,
         client_secret: str,
+        service_bot_token: str = None,
         redirect_uri: str = 'http://127.0.0.1/callback',
         scopes: str | tuple[str] = ('identify', 'email', 'guilds')
     ):
@@ -18,6 +19,8 @@ class Netcord(HTTPClient):
 
         self.client_id = client_id
         self.client_secret = client_secret
+        self.service_bot_token = service_bot_token
+
         self.redirect_uri = redirect_uri
         self.scopes = scopes if isinstance(scopes, str) else ' '.join(scopes)
 
@@ -90,8 +93,26 @@ class Netcord(HTTPClient):
 
         return await self.fetch('GET', request_url, headers, return_class=User)
 
+    async def get_user_by_id(self, user_id: str) -> User:
+        if self.service_bot_token is None:
+            raise ValueError('Bot token is required')
+
+        headers = {'Authorization': 'Bot ' + self.service_bot_token}
+        request_url = self.api + f'/users/{user_id}'
+
+        return await self.fetch('GET', request_url, headers, return_class=User)
+
     async def get_user_guilds(self, access_token: str) -> list[dict]:
         headers = {'Authorization': 'Bearer ' + access_token}
         request_url = self.api + '/users/@me/guilds'
 
         return await self.fetch('GET', request_url, headers, return_class=Guild)
+
+    async def get_app(self) -> dict:
+        if self.service_bot_token is None:
+            raise ValueError('Bot token is required')
+
+        headers = {'Authorization': 'Bot ' + self.service_bot_token}
+        request_url = self.api + '/applications/@me'
+
+        return await self.fetch('GET', request_url, headers)
