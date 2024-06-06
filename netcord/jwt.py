@@ -37,14 +37,14 @@ class JWTClient:
         to_encode.update({'exp': expire, 'type': token_type.value})
         encoded_jwt = jwt.encode(to_encode, self.secret_key, self.algorithm)
         return encoded_jwt
-    
+
     def decode_token(self, token: str) -> dict:
         try:
             decoded_jwt = jwt.decode(token, self.secret_key, [self.algorithm])
             return decoded_jwt
-        
+
         except jwt.ExpiredSignatureError as error:
-            logger.error(str(error)) 
+            logger.error(str(error))
         except jwt.InvalidTokenError as error:
             logger.error(str(error))
 
@@ -52,7 +52,7 @@ class JWTClient:
         payload = self.decode_token(refresh_token)
         if payload.get('type') == 'refresh':
             raise ValueError('The token type is required to be refresh')
-        
+
         new_access_token = self.create_token({'sub': payload['sub']})
         new_refresh_token = self.create_token({'sub': payload['sub']})
 
