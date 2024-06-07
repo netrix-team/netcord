@@ -4,6 +4,7 @@ from urllib.parse import urlencode, quote
 
 from netcord.http import HTTPClient
 from netcord.models import Tokens, User, Guild
+from netcord.exceptions import ScopeMissing, Unauthorized
 
 
 class Netcord(HTTPClient):
@@ -57,11 +58,12 @@ class Netcord(HTTPClient):
     def check_state(self, session_id: str, received_state: str):
         stored_state = self.state_storage.pop(session_id, None)
         if stored_state is None:
-            raise ValueError('State not found for the given session ID')
+            raise Unauthorized('State not found for the given session ID')
         if stored_state != received_state:
-            raise ValueError('Invalid state parameter')
+            raise Unauthorized('Invalid state parameter')
         return True
 
+    # tokens
     async def get_access_token(self, code: str) -> Tokens:
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 
@@ -87,7 +89,11 @@ class Netcord(HTTPClient):
 
         await self.fetch('POST', self.revoke, headers, data, self.auth)
 
+    # users
     async def get_user(self, access_token: str) -> User:
+        if 'identify' not in self.scopes:
+            raise ScopeMissing('identify')
+
         headers = {'Authorization': 'Bearer ' + access_token}
         request_url = self.api + '/users/@me'
 
@@ -101,13 +107,30 @@ class Netcord(HTTPClient):
         request_url = self.api + f'/users/{user_id}'
 
         return await self.fetch('GET', request_url, headers, return_class=User)
+    
+    async def is_authenticated(self, access_token: str) -> bool:
+        headers = {'Authorization': 'Bearer ' + access_token}
+        request_url = self.api + '/oauth2/@me'
 
+        try:
+            res = await self.fetch('GET', request_url, headers)
+            print(res)
+
+            return True
+        except Unauthorized:
+            return False
+
+    # guilds
     async def get_user_guilds(self, access_token: str) -> list[dict]:
+        if 'guilds' not in self.scopes:
+            raise ScopeMissing('guilds')
+
         headers = {'Authorization': 'Bearer ' + access_token}
         request_url = self.api + '/users/@me/guilds'
 
         return await self.fetch('GET', request_url, headers, return_class=Guild)
 
+    # apps
     async def get_app(self) -> dict:
         if self.service_bot_token is None:
             raise ValueError('Bot token is required')

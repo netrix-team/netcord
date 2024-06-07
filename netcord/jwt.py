@@ -1,6 +1,9 @@
 import jwt
 import datetime
 
+from fastapi import HTTPException
+from netcord.exceptions import Unauthorized
+
 from netcord.enums import TokenType
 from netcord.logger import get_logger
 logger = get_logger(__name__)
@@ -45,15 +48,20 @@ class JWTClient:
 
         except jwt.ExpiredSignatureError as error:
             logger.error(str(error))
+            raise Unauthorized('Signature has expired')
         except jwt.InvalidTokenError as error:
             logger.error(str(error))
+            raise Unauthorized('Signature verification failed')
 
     def exchange_refresh_token(self, refresh_token: str) -> tuple[str, str]:
         payload = self.decode_token(refresh_token)
-        if payload.get('type') == 'refresh':
-            raise ValueError('The token type is required to be refresh')
+        if payload.get('type') != 'refresh':
+            raise HTTPException(400, 'The token type is required to be refresh')
 
-        new_access_token = self.create_token({'sub': payload['sub']})
-        new_refresh_token = self.create_token({'sub': payload['sub']})
+        id, username = payload['id'], payload['username']
+        data = {'id': id, 'username': username}
+
+        new_access_token = self.create_token(data, TokenType.ACCESS)
+        new_refresh_token = self.create_token(data, TokenType.REFRESH)
 
         return (new_access_token, new_refresh_token)
