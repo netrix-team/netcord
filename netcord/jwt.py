@@ -1,10 +1,13 @@
 import jwt
 import datetime
 
-from fastapi import HTTPException
-from netcord.exceptions import Unauthorized
+from fastapi import HTTPException, Depends
+from fastapi.security import OAuth2PasswordBearer
+oauth2 = OAuth2PasswordBearer('token')
 
 from netcord.enums import TokenType
+from netcord.exceptions import Unauthorized
+
 from netcord.logger import get_logger
 logger = get_logger(__name__)
 
@@ -43,15 +46,13 @@ class JWTClient:
 
     def decode_token(self, token: str) -> dict:
         try:
-            decoded_jwt = jwt.decode(token, self.secret_key, [self.algorithm])
-            return decoded_jwt
+            payload = jwt.decode(token, self.secret_key, [self.algorithm])
+            return payload
 
         except jwt.ExpiredSignatureError as error:
-            logger.error(str(error))
-            raise Unauthorized('Signature has expired')
+            raise Unauthorized(str(error))
         except jwt.InvalidTokenError as error:
-            logger.error(str(error))
-            raise Unauthorized('Signature verification failed')
+            raise Unauthorized(str(error))
 
     def exchange_refresh_token(self, refresh_token: str) -> tuple[str, str]:
         payload = self.decode_token(refresh_token)
