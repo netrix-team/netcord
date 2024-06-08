@@ -50,26 +50,34 @@ class Netcord(HTTPClient):
     # auth
     def generate_auth_url(self, session_id: str = None) -> str:
         """
-        Generates an OAuth2 authorization URL for initiating the authorization flow with Discord.
+        Generates the OAuth2 authorization URL necessary for initiating the authorization process with Discord.
 
-        This method constructs the URL that users should be redirected to in order to authorize your application and grant it access to their Discord account. The URL includes necessary query parameters such as `client_id`, `redirect_uri`, `response_type`, and `scope`. Optionally, it can include a `state` parameter for maintaining state between the request and callback.
+        This function constructs the authorization URL to which users must be redirected to allow your application to access their Discord accounts. The URL is built with essential query parameters including `client_id`, `redirect_uri`, `response_type`, and `scope`. It may optionally include a `state` parameter, which aids in maintaining continuity and security between the initial request and the callback.
 
-        Detailed information about the authorization URL can be found in the Discord documentation:
+        For more detailed information about how the authorization URL works, refer to the Discord documentation at:
         https://discord.com/developers/docs/topics/oauth2#authorization-code-grant-authorization-url-example
 
-        Parameters:
-        - session_id (str, optional): An optional session identifier to associate with the state parameter. This can be used to mitigate CSRF attacks by storing the state parameter for verification during the callback phase.
+        Parameters
+        ----------
+        session_id: str, optional
+            An optional session identifier that can be included in the `state` parameter. This helps in protecting against CSRF attacks by enabling the verification of the `state` during the callback phase.
 
-        Returns:
-        - str: The constructed authorization URL that users should be redirected to for initiating the OAuth2 authorization flow with Discord.
+        Returns
+        -------
+        str:
+            The complete authorization URL to which users should be redirected to begin the OAuth2 authorization process with Discord.
 
-        Example:
-        - The generated URL will look something like this:
+        Example
+        -------
+        The URL generated will appear similar to this:
             `https://discord.com/api/oauth2/authorize?client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_REDIRECT_URI&response_type=code&scope=YOUR_SCOPES&state=RANDOM_STATE`
 
-        Raises:
-        - Exception: If there are any unexpected errors encountered during the URL generation.
+        Raises
+        ------
+        Exception:
+            If any unexpected issues occur while generating the URL.
         """
+
 
         params = {
             'client_id': self.client_id,
