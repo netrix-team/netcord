@@ -1,7 +1,7 @@
 import jwt
 import datetime
 
-from fastapi import HTTPException, Depends
+from fastapi import HTTPException
 from fastapi.security import OAuth2PasswordBearer
 oauth2 = OAuth2PasswordBearer('token')
 

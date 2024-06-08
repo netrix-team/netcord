@@ -1,4 +1,4 @@
-# netcord
+# Netcord
 Easily integrate authorization via Discord into your website
 
 ## Installation

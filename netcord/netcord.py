@@ -2,6 +2,12 @@ import secrets
 from aiohttp import BasicAuth
 from urllib.parse import urlencode, quote
 
+from typing import Optional
+from fastapi import Depends
+
+from fastapi.security import HTTPBearer
+from fastapi.security import HTTPAuthorizationCredentials
+
 from netcord.http import HTTPClient
 from netcord.models import Tokens, User, Guild
 from netcord.exceptions import ScopeMissing, Unauthorized
@@ -108,6 +114,7 @@ class Netcord(HTTPClient):
 
         return await self.fetch('GET', request_url, headers, return_class=User)
     
+    # auth
     async def is_authenticated(self, access_token: str) -> bool:
         headers = {'Authorization': 'Bearer ' + access_token}
         request_url = self.api + '/oauth2/@me'
@@ -119,6 +126,15 @@ class Netcord(HTTPClient):
             return True
         except Unauthorized:
             return False
+        
+    async def login_required(
+        self,
+        bearer: Optional[HTTPAuthorizationCredentials] = Depends(HTTPBearer())
+    ):
+        if bearer is None:
+            raise Unauthorized
+        if not await self.is_authenticated(bearer.credentials):
+            raise Unauthorized
 
     # guilds
     async def get_user_guilds(self, access_token: str) -> list[dict]:

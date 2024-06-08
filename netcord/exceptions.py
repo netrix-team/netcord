@@ -2,10 +2,17 @@ from fastapi import HTTPException
 
 
 class Unauthorized(HTTPException):
-    """An Exception raised when user is not authorized"""
+    """An Exception raised when a user is not authorized"""
 
     def __init__(self, detail: str = 'Unauthorized'):
         super().__init__(status_code=401, detail=detail)
+
+
+class Forbidden(HTTPException):
+    """An Exception raised when a user is denied access"""
+
+    def __init__(self, detail: str = 'Forbidden'):
+        super().__init__(status_code=403, detail=detail)
 
 
 class ScopeMissing(Exception):
