@@ -48,4 +48,4 @@ html_static_path = ['_static']
 
 html_logo = '_static/logo.png'
 html_favicon = '_static/favicon.ico'
-html_title = f'<h3 align="center">Version: <b>{release}</b></h3>'
+html_title = f'<h6 align="center">Version: <b>{release}</b></h6>'
