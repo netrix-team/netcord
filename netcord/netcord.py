@@ -59,7 +59,7 @@ class Netcord(HTTPClient):
 
         Parameters
         ----------
-        session_id: str
+        session_id:
             An optional session identifier that can be included in the `state` parameter. This helps in protecting against CSRF attacks by enabling the verification of the `state` during the callback phase.
 
         Raises
@@ -94,9 +94,9 @@ class Netcord(HTTPClient):
 
         Parameters
         ----------
-        session_id: str
+        session_id:
             The session identifier associated with the state parameter.
-        received_state: str
+        received_state:
             The state parameter received from the OAuth2 authorization callback.
 
         Raises
@@ -126,7 +126,7 @@ class Netcord(HTTPClient):
 
         Parameters
         ----------
-        request: Request
+        request:
             The HTTP request object containing the headers from which the Bearer token is to be extracted.
 
         Raises
@@ -154,7 +154,7 @@ class Netcord(HTTPClient):
 
         Parameters
         ----------
-        bearer: HTTPAuthorizationCredentials
+        bearer:
             The Bearer token extracted from the request's Authorization header using the HTTPBearer dependency. This is automatically provided by FastAPI's dependency injection system.
 
         Raises
@@ -179,7 +179,7 @@ class Netcord(HTTPClient):
 
         Parameters
         ----------
-        access_token: str
+        access_token:
             The access token to be verified for authentication.
 
         Raises
@@ -213,7 +213,7 @@ class Netcord(HTTPClient):
 
         Parameters
         ----------
-        code: str
+        code:
             The authorization code received from the authentication server as part of the OAuth2 authorization flow. This code is exchanged for an access token.
 
         Raises
@@ -242,7 +242,7 @@ class Netcord(HTTPClient):
 
         Parameters
         ----------
-        refresh_token: str
+        refresh_token:
             The refresh token that was issued along with the original access token. This token is used to secure a new access token.
 
         Raises
@@ -270,7 +270,7 @@ class Netcord(HTTPClient):
 
         Parameters
         ----------
-        access_token: str
+        access_token:
             The access token that needs to be revoked.
 
         Raises
@@ -299,7 +299,7 @@ class Netcord(HTTPClient):
 
         Parameters
         ----------
-        request: Request
+        request:
             The request object from which the access token will be extracted. This object must contain an 'Authorization' header with a bearer token.
 
         Raises
@@ -332,7 +332,7 @@ class Netcord(HTTPClient):
 
         Parameters
         ----------
-        user_id: str
+        user_id:
             The unique identifier for the user whose data is to be retrieved. This is a globally unique identifier that represents an individual user.
 
         Raises
@@ -363,7 +363,7 @@ class Netcord(HTTPClient):
 
         Parameters
         ----------
-        request: Request
+        request:
             The request object from which the access token will be extracted. This object must contain an 'Authorization' header with a bearer token.
 
         Raises
