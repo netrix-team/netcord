@@ -7,7 +7,7 @@ from pydantic import Extra, model_validator
 DISCORD_CDN = 'https://cdn.discordapp.com'
 
 
-class Tokens(BaseModel):
+class Token(BaseModel):
     token_type: str
     expires_in: int
     scope: str | list[str]
