@@ -1,4 +1,5 @@
 import secrets
+from datetime import datetime, timezone
 
 from aiohttp import BasicAuth
 from urllib.parse import urlencode, quote
@@ -10,6 +11,9 @@ from fastapi.security import HTTPAuthorizationCredentials as HTTPAuth
 from netcord.http import HTTPClient
 from netcord.models import Token, User, Guild
 from netcord.exceptions import Unauthorized, Forbidden, ScopeMissing
+
+from netcord.logger import get_logger
+logger = get_logger(__name__)
 
 
 class Netcord(HTTPClient):
@@ -74,36 +78,38 @@ class Netcord(HTTPClient):
             raise Forbidden
         
         return True
-
-    async def check_token(self, request: Request) -> str | None:
+    
+    async def authenticate(self, request: Request) -> str:
         header = request.headers.get('Authorization')
         if not header:
             raise Unauthorized
         
         parts = header.split(' ')
-        if parts[0] != 'Bearer' or len(parts) > 2:
+        if parts[0] != 'Bearer' or len(parts) != 2:
             raise Unauthorized
         
-        token = parts[1]
-        return token
-
-    async def login_required(self, bearer: HTTPAuth = Depends(HTTPBearer())):
-        if bearer is None:
+        access_token = parts[1]
+        if not await self.is_authenticated(access_token):
             raise Unauthorized
-        if not await self.is_authenticated(bearer.credentials):
-            raise Unauthorized
+        
+        return access_token
         
     async def is_authenticated(self, access_token: str) -> bool:
         headers = {'Authorization': 'Bearer ' + access_token}
         route = self.api + '/oauth2/@me'
 
-        try:
-            res = await self.fetch('GET', route, headers)
-            print(res)
-
-            return True
-        except Unauthorized:
+        result: dict = await self.fetch('GET', route, headers)
+        if not result:
             return False
+
+        # Check if the token has expired
+        expires = result.get('expires')
+        if expires:
+            expires = datetime.fromisoformat(expires)
+            if expires <= datetime.now(timezone.utc):
+                return False
+            
+        return True
 
     # tokens
     async def _tokens(self, url: str, data: dict, return_class=None):
@@ -137,16 +143,18 @@ class Netcord(HTTPClient):
         return await self._tokens(self.revoke, data, None)
     
     # users
-    async def get_user(self, request: Request) -> User:
-        access_token = await self.check_token(request)
-
+    async def get_user(self, access_token: str) -> User:
         if 'identify' not in self.scopes:
             raise ScopeMissing('identify')
         
         route = self.api + '/users/@me'
         headers = {'Authorization': 'Bearer ' + access_token}
 
-        return await self.fetch('GET', route, headers, return_class=User)
+        user = await self.fetch('GET', route, headers, return_class=User)
+        if not user:
+            raise Unauthorized
+
+        return user
 
     async def get_user_by_id(self, user_id: str) -> User:
         if not self.bot_token:
@@ -157,16 +165,18 @@ class Netcord(HTTPClient):
 
         return await self.fetch('GET', route, headers, return_class=User)
 
-    async def get_user_guilds(self, request: Request) -> list[Guild]:
-        access_token = await self.check_token(request)
-
+    async def get_user_guilds(self, access_token: str) -> list[Guild]:
         if 'guilds' not in self.scopes:
             raise ScopeMissing('guilds')
         
         route = self.api + '/users/@me/guilds'
         headers = {'Authorization': 'Bearer ' + access_token}
 
-        return await self.fetch('GET', route, headers, return_class=Guild)
+        guilds = await self.fetch('GET', route, headers, return_class=Guild)
+        if not guilds:
+            raise Unauthorized
+
+        return guilds
 
     # apps
     async def get_app(self) -> dict:
