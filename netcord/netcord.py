@@ -1,12 +1,9 @@
 import secrets
 from datetime import datetime, timezone
 
+from fastapi import Request
 from aiohttp import BasicAuth
 from urllib.parse import urlencode, quote
-
-from fastapi import Request, Depends
-from fastapi.security import HTTPBearer
-from fastapi.security import HTTPAuthorizationCredentials as HTTPAuth
 
 from netcord.http import HTTPClient
 from netcord.models import Token, User, Guild
@@ -67,33 +64,33 @@ class Netcord(HTTPClient):
             params.update({'state': state})
 
         return f'{self.authorize}?{urlencode(params, quote_via=quote)}'
-    
+
     def check_state(self, session_id: str, received_state: str):
         stored_state = self.state_storage.pop(session_id, None)
 
         if stored_state is None:
             raise Forbidden
-        
+
         if stored_state != received_state:
             raise Forbidden
-        
+
         return True
-    
+
     async def authenticate(self, request: Request) -> str:
         header = request.headers.get('Authorization')
         if not header:
             raise Unauthorized
-        
+
         parts = header.split(' ')
         if parts[0] != 'Bearer' or len(parts) != 2:
             raise Unauthorized
-        
+
         access_token = parts[1]
         if not await self.is_authenticated(access_token):
             raise Unauthorized
-        
+
         return access_token
-        
+
     async def is_authenticated(self, access_token: str) -> bool:
         headers = {'Authorization': 'Bearer ' + access_token}
         route = self.api + '/oauth2/@me'
@@ -108,13 +105,13 @@ class Netcord(HTTPClient):
             expires = datetime.fromisoformat(expires)
             if expires <= datetime.now(timezone.utc):
                 return False
-            
+
         return True
 
     # tokens
     async def _tokens(self, url: str, data: dict, return_class=None):
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-        return await self.fetch('POST', url, headers=headers, data=data, 
+        return await self.fetch('POST', url, headers=headers, data=data, # noqa
                                 auth=self.auth, return_class=return_class)
 
     async def get_access_token(self, code: str) -> Token:
@@ -141,12 +138,12 @@ class Netcord(HTTPClient):
         }
 
         return await self._tokens(self.revoke, data, None)
-    
+
     # users
     async def get_user(self, access_token: str) -> User:
         if 'identify' not in self.scopes:
             raise ScopeMissing('identify')
-        
+
         route = self.api + '/users/@me'
         headers = {'Authorization': 'Bearer ' + access_token}
 
@@ -168,7 +165,7 @@ class Netcord(HTTPClient):
     async def get_user_guilds(self, access_token: str) -> list[Guild]:
         if 'guilds' not in self.scopes:
             raise ScopeMissing('guilds')
-        
+
         route = self.api + '/users/@me/guilds'
         headers = {'Authorization': 'Bearer ' + access_token}
 
