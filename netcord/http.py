@@ -38,6 +38,8 @@ class HTTPClient:
             logger.error(
                 f'ClientError: {error.status} - {error.message}; '
                 f'{error.request_info.method} -> {error.request_info.url}')
+            return
 
         except Exception as exc:
             logger.error(f'Unknown error: {exc}')
+            return

@@ -25,7 +25,9 @@ version = {attr = "netcord.__version__"}
 dependencies = {file = "requirements.txt"}
 
 [project.urls]
+Homepage = "https://github.com/netrix-team/netcord"
 GitHub = "https://github.com/netrix-team/netcord"
+Docs = "https://netcord.readthedocs.io/en/latest/"
 
 [build-system]
 requires = ["setuptools>=61.0"]
