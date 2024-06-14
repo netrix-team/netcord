@@ -4,7 +4,7 @@ description = "Package for authentication with Discord API"
 requires-python = ">=3.9"
 license = {text = "MIT"}
 readme = "README.md"
-keywords = ["netcord", "discord", "discord oauth2", "oauth2"]
+keywords = ["netcord", "discord", "oauth2"]
 authors = [
     { name = "netrix-team" }
 ]

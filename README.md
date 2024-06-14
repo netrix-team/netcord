@@ -1,7 +1,7 @@
 # Netcord
-Easily integrate authorization via Discord into your website
+Package for authentication with Discord API
 
-## Installation
+## Installing
 ```
 pip install netcord
 ```
