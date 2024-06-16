@@ -1,11 +1,13 @@
 import secrets
+from fastapi import Request
 from datetime import datetime, timezone
 
-from fastapi import Request
 from aiohttp import BasicAuth
 from urllib.parse import urlencode, quote
 
 from netcord.http import HTTPClient
+from netcord.singletons import SingletonMeta
+
 from netcord.models import Token, User, Guild
 from netcord.exceptions import Unauthorized, Forbidden, ScopeMissing
 
@@ -13,7 +15,7 @@ from netcord.logger import get_logger
 logger = get_logger(__name__)
 
 
-class Netcord(HTTPClient):
+class Netcord(HTTPClient, metaclass=SingletonMeta):
     def __init__(
         self,
         client_id: str,
@@ -45,8 +47,8 @@ class Netcord(HTTPClient):
         self.api = f'{self.base_url}/api/v10'
         self.authorize = f'{self.base_url}/oauth2/authorize'
 
-        self.token = f'{self.base_url}/api/oauth2/token'
-        self.revoke = f'{self.base_url}/api/oauth2/token/revoke'
+        self.token = f'{self.api}/oauth2/token'
+        self.revoke = f'{self.api}/oauth2/token/revoke'
 
     # auth
     def generate_auth_url(self, session_id: str = None) -> str:
@@ -100,16 +102,18 @@ class Netcord(HTTPClient):
             return False
 
         # Check if the token has expired
-        expires = result.get('expires')
-        if expires:
-            expires = datetime.fromisoformat(expires)
-            if expires <= datetime.now(timezone.utc):
-                return False
+        expires = result.get('expires', None)
+        if not expires:
+            return False
+
+        expires = datetime.fromisoformat(expires)
+        if expires <= datetime.now(timezone.utc):
+            return False
 
         return True
 
     # tokens
-    async def _tokens(self, url: str, data: dict, return_class=None):
+    async def _get_tokens(self, url: str, data: dict, return_class=None):
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
         return await self.fetch('POST', url, headers=headers, data=data, # noqa
                                 auth=self.auth, return_class=return_class)
@@ -121,7 +125,7 @@ class Netcord(HTTPClient):
             'grant_type': 'authorization_code'
         }
 
-        return await self._tokens(self.token, data, Token)
+        return await self._get_tokens(self.token, data, Token)
 
     async def refresh_access_token(self, refresh_token: str) -> Token:
         data = {
@@ -129,7 +133,7 @@ class Netcord(HTTPClient):
             'refresh_token': refresh_token
         }
 
-        return await self._tokens(self.token, data, Token)
+        return await self._get_tokens(self.token, data, Token)
 
     async def revoke_access_token(self, access_token: str) -> None:
         data = {
@@ -137,7 +141,7 @@ class Netcord(HTTPClient):
             'token_type_hint': 'access_token'
         }
 
-        return await self._tokens(self.revoke, data, None)
+        return await self._get_tokens(self.revoke, data, None)
 
     # users
     async def get_user(self, access_token: str) -> User:
