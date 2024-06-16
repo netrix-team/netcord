@@ -22,6 +22,13 @@ class Forbidden(HTTPException):
         super().__init__(status_code=403, detail=detail)
 
 
+class InternalServerError(HTTPException):
+    """An Exception raised when a server-side error occurs"""
+
+    def __init__(self, detail: str = 'Internal Server Error'):
+        super().__init__(status_code=500, detail=detail)
+
+
 class ScopeMissing(Exception):
     """An Exception raised when a required scope has not been transferred"""
 

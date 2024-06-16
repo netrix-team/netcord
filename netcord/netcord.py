@@ -1,5 +1,5 @@
 import secrets
-from fastapi import Request
+from fastapi import Request, Depends
 from datetime import datetime, timezone
 
 from aiohttp import BasicAuth
@@ -8,8 +8,10 @@ from urllib.parse import urlencode, quote
 from netcord.http import HTTPClient
 from netcord.singletons import SingletonMeta
 
+from netcord.utils import login_required
 from netcord.models import Token, User, Guild
-from netcord.exceptions import Unauthorized, Forbidden, ScopeMissing
+from netcord.exceptions import Unauthorized, Forbidden, \
+    InternalServerError, ScopeMissing
 
 from netcord.logger import get_logger
 logger = get_logger(__name__)
@@ -21,7 +23,7 @@ class Netcord(HTTPClient, metaclass=SingletonMeta):
         client_id: str,
         client_secret: str,
         bot_token: str = None,
-        redirect_uri: str = 'http://127.0.0.1/callback',
+        redirect_uri: str = 'http://127.0.0.1:8000/callback',
         scopes: str | list[str] = ['identify', 'email', 'guilds']
     ):
         super().__init__()
@@ -52,7 +54,7 @@ class Netcord(HTTPClient, metaclass=SingletonMeta):
 
     # auth
     def generate_auth_url(self, session_id: str = None) -> str:
-        params = {
+        query_params = {
             'client_id': self.client_id,
             'redirect_uri': self.redirect_uri,
             'response_type': 'code',
@@ -63,54 +65,54 @@ class Netcord(HTTPClient, metaclass=SingletonMeta):
             state = secrets.token_urlsafe(16)
             self.state_storage[session_id] = state
 
-            params.update({'state': state})
+            query_params.update({'state': state})
 
-        return f'{self.authorize}?{urlencode(params, quote_via=quote)}'
+        return f'{self.authorize}?{urlencode(query_params, quote_via=quote)}'
 
-    def check_state(self, session_id: str, received_state: str):
+    def check_received_state(self, session_id: str, state: str) -> None:
         stored_state = self.state_storage.pop(session_id, None)
 
         if stored_state is None:
             raise Forbidden
 
-        if stored_state != received_state:
+        if stored_state != state:
             raise Forbidden
 
-        return True
+        pass
 
-    async def authenticate(self, request: Request) -> str:
-        header = request.headers.get('Authorization')
-        if not header:
-            raise Unauthorized
-
-        parts = header.split(' ')
-        if parts[0] != 'Bearer' or len(parts) != 2:
-            raise Unauthorized
-
-        access_token = parts[1]
-        if not await self.is_authenticated(access_token):
-            raise Unauthorized
-
-        return access_token
-
-    async def is_authenticated(self, access_token: str) -> bool:
+    async def is_authenticated(self, access_token: str = Depends(login_required)):  # noqa
         headers = {'Authorization': 'Bearer ' + access_token}
+
         route = self.api + '/oauth2/@me'
+        response: dict = await self.fetch('GET', route, headers)
 
-        result: dict = await self.fetch('GET', route, headers)
-        if not result:
-            return False
+        if response is None:
+            raise InternalServerError
 
-        # Check if the token has expired
-        expires = result.get('expires', None)
-        if not expires:
-            return False
+        expires = response.get('expires', None)
+        if expires is None:
+            raise Unauthorized
 
         expires = datetime.fromisoformat(expires)
         if expires <= datetime.now(timezone.utc):
-            return False
+            raise Unauthorized
 
-        return True
+        pass
+
+    async def extract_callback_data(self, request: Request) -> str:
+        data = dict(await request.form())
+
+        session_id = data.get('session_id', None)
+        state = data.get('state', None)
+
+        if session_id and state:
+            self.check_received_state(session_id, state)
+
+        code = data.get('code', None)
+        if not code:
+            raise Forbidden
+
+        return code
 
     # tokens
     async def _get_tokens(self, url: str, data: dict, return_class=None):

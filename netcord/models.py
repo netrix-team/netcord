@@ -65,7 +65,7 @@ class Guild(BaseModel):
             self.icon_url = self.guild_icon_url(
                 guild_id=self.id, icon_hash=self.icon_hash)
         else:
-            self.icon_url = None  # Нужно будет заменить на что-то
+            self.icon_url = None
 
     def guild_icon_url(self, guild_id: str, icon_hash: str) -> str:
         extension = '.gif' if icon_hash.startswith('a_') else '.png'
