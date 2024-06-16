@@ -81,7 +81,7 @@ class Netcord(HTTPClient, metaclass=SingletonMeta):
         pass
 
     async def is_authenticated(self, access_token: str = Depends(login_required)):  # noqa
-        headers = {'Authorization': 'Bearer ' + access_token}
+        headers = {'Authorization': f'Bearer {access_token}'}
 
         route = self.api + '/oauth2/@me'
         response: dict = await self.fetch('GET', route, headers)
@@ -97,7 +97,7 @@ class Netcord(HTTPClient, metaclass=SingletonMeta):
         if expires <= datetime.now(timezone.utc):
             raise Unauthorized
 
-        pass
+        return access_token
 
     async def extract_callback_data(self, request: Request) -> str:
         data = dict(await request.form())
@@ -151,7 +151,7 @@ class Netcord(HTTPClient, metaclass=SingletonMeta):
             raise ScopeMissing('identify')
 
         route = self.api + '/users/@me'
-        headers = {'Authorization': 'Bearer ' + access_token}
+        headers = {'Authorization': f'Bearer {access_token}'}
 
         user = await self.fetch('GET', route, headers, return_class=User)
         if not user:
@@ -164,7 +164,7 @@ class Netcord(HTTPClient, metaclass=SingletonMeta):
             raise ValueError('Bot token is required')
 
         route = self.api + f'/users/{user_id}'
-        headers = {'Authorization': 'Bot ' + self.bot_token}
+        headers = {'Authorization': f'Bot {self.bot_token}'}
 
         return await self.fetch('GET', route, headers, return_class=User)
 
@@ -173,7 +173,7 @@ class Netcord(HTTPClient, metaclass=SingletonMeta):
             raise ScopeMissing('guilds')
 
         route = self.api + '/users/@me/guilds'
-        headers = {'Authorization': 'Bearer ' + access_token}
+        headers = {'Authorization': f'Bearer {access_token}'}
 
         guilds = await self.fetch('GET', route, headers, return_class=Guild)
         if not guilds:
@@ -187,6 +187,6 @@ class Netcord(HTTPClient, metaclass=SingletonMeta):
             raise ValueError('Bot token is required')
 
         route = self.api + '/applications/@me'
-        headers = {'Authorization': 'Bot ' + self.bot_token}
+        headers = {'Authorization': f'Bot {self.bot_token}'}
 
         return await self.fetch('GET', route, headers)

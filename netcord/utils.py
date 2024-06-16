@@ -14,7 +14,7 @@ def login_required(
     if not (header and header.scheme and header.credentials):
         raise Forbidden
 
-    if header.credentials.lower() != 'bearer':
+    if header.scheme.lower() != 'bearer':
         raise Forbidden
 
     return header.credentials
