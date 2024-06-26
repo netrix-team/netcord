@@ -100,7 +100,7 @@ class Netcord(HTTPClient, metaclass=SingletonMeta):
         return access_token
 
     async def extract_callback_data(self, request: Request) -> str:
-        data = dict(await request.form())
+        data = await request.json()
 
         session_id = data.get('session_id', None)
         state = data.get('state', None)
