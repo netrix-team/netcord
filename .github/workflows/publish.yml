@@ -1,18 +1,25 @@
 name: Upload Python Package
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - main
 
 jobs:
-  build:
+  build-and-publish:
     runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/netcord/
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set Up Python
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -23,30 +30,5 @@ jobs:
       - name: Build package
         run: hatch build
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: dist
-          path: dist/
-
-  pypi-publish:
-    name: Upload Release To PyPI
-    runs-on: ubuntu-latest
-    needs: build
-
-    environment:
-      name: pypi
-      url: https://pypi.org/p/netcord
-    permissions:
-      id-token: write
-      contents: read
-
-    steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: dist
-          path: dist/
-
-      - name: Publish Package Distributions To PyPI
+      - name: Publish package to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
