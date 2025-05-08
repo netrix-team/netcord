@@ -1,0 +1,39 @@
+[build-system]
+requires = ["hatchling>=1.14.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "netcord"
+version = "2.0.0"
+description = "Asynchronous Discord OAuth2 library for FastAPI (identify, email, guilds scopes support)"
+requires-python = ">=3.11"
+license = { text = "MIT License" }
+readme = "README.md"
+keywords = ["netcord", "discord", "oauth2", "fastapi", "asyncio", "api"]
+authors = [
+    { name = "netrix-team" }
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+
+    "Framework :: FastAPI",
+    "Natural Language :: English",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Internet :: WWW/HTTP :: Session",
+
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    'httpx>=0.28.1',
+    'pydantic>=2.11.4',
+    'fastapi>=0.115.12',
+]
+
+[project.urls]
+Homepage = "https://github.com/netrix-team/netcord"
+GitHub = "https://github.com/netrix-team/netcord"
