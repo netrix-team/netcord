@@ -7,4 +7,4 @@ exclude =
     tests/,
     *tests*.py
 
-ignore = E128, E125
+ignore = E128, E125, W503

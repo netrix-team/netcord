@@ -33,7 +33,7 @@ class OauthClient:
         self.base_api_url = f'{DISCORD_API_BASE_URL}/{API_VERSION}'
         self._http = HTTPClient(base_url=self.base_api_url)
 
-    def generate_auth_url(self, state: str = None, prompt: str = 'consent') -> str:
+    def generate_auth_url(self, state: str = None, prompt: str = 'consent') -> str:  # noqa: E501
         params = {
             'client_id': self.client_id,
             'redirect_uri': self.redirect_uri,
@@ -143,6 +143,6 @@ class OauthClient:
         guilds_data = response.json()
         guilds = [Guild(**guild) for guild in guilds_data]
         return guilds
-    
+
     async def close(self) -> None:
         await self._http.close()
