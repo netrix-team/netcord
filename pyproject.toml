@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "netcord"
-version = "2.0.1"
+version = "2.1.1"
 description = "Asynchronous Discord OAuth2 library for FastAPI (identify, email, guilds scopes support)"
 requires-python = ">=3.12"
 license = { text = "MIT License" }

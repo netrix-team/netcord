@@ -145,7 +145,7 @@ class Netcord:
         guilds_data = response.json()
         guilds = [Guild(**guild) for guild in guilds_data]
         return guilds
-    
+
     async def fetch_user_by_id(self, user_id: str) -> User:
         headers = {'Authorization': f'Bot {self.bot_token}'}
         response: Response = await self._http.get(
@@ -157,7 +157,7 @@ class Netcord:
                 'Failed to fetch user info: Unauthorized',
                 response.status_code
             )
-        
+
         user_data = response.json()
         user = User(**user_data)
         return user
