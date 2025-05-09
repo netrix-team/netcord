@@ -11,21 +11,23 @@ from .config import (
 )
 
 __all__ = (
-    'OauthClient',
+    'Netcord',
 )
 
 
-class OauthClient:
+class Netcord:
     def __init__(
         self,
         client_id: str,
         client_secret: str,
         redirect_uri: str,
         scopes: tuple[str, ...] = DEFAULT_SCOPES,
+        bot_token: str = None
     ) -> None:
         self.client_id = client_id
         self.client_secret = client_secret
         self.redirect_uri = redirect_uri
+        self.bot_token = bot_token
 
         self.scopes = tuple(scopes)
         self._scope_str = ' '.join(self.scopes)
@@ -143,6 +145,22 @@ class OauthClient:
         guilds_data = response.json()
         guilds = [Guild(**guild) for guild in guilds_data]
         return guilds
+    
+    async def fetch_user_by_id(self, user_id: str) -> User:
+        headers = {'Authorization': f'Bot {self.bot_token}'}
+        response: Response = await self._http.get(
+            f'/users/{user_id}', headers=headers
+        )
+
+        if response.status_code != 200:
+            raise AuthenticationError(
+                'Failed to fetch user info: Unauthorized',
+                response.status_code
+            )
+        
+        user_data = response.json()
+        user = User(**user_data)
+        return user
 
     async def close(self) -> None:
         await self._http.close()

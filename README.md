@@ -20,9 +20,9 @@
 Set up your credentials once:
 
 ```python
-from netcord import OauthClient
+from netcord import Netcord
 
-client = OauthClient(
+client = Netcord(
     client_id='your_client_id',
     client_secret='your_client_secret',
     redirect_uri='https://yourapp.com/callback',

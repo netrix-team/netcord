@@ -32,13 +32,12 @@ class User(BaseModel):
     avatar: Optional[str] = Field(None)
     avatar_url: Optional[str] = Field(None)
     email: Optional[str] = Field(None)
-    bot: Optional[bool] = Field(None)
-    system: Optional[bool] = Field(None)
-    mfa_enabled: Optional[bool] = Field(None)
+    bot: Optional[bool] = Field(False)
+    mfa_enabled: Optional[bool] = Field(False)
     banner: Optional[str] = Field(None)
     accent_color: Optional[int] = Field(None)
     locale: Optional[str] = Field(None)
-    verified: Optional[bool] = Field(None)
+    verified: Optional[bool] = Field(False)
 
     model_config = ConfigDict(extra='ignore')
 

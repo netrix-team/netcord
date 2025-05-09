@@ -1,1 +1,1 @@
-from .auth import OauthClient  # noqa: F401
+from .auth import Netcord  # noqa: F401
