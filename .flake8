@@ -6,5 +6,6 @@ exclude =
     venv/,
     tests/,
     *tests*.py
+    test*.py
 
 ignore = E128, E125, W503

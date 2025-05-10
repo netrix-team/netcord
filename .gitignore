@@ -169,3 +169,6 @@ dist/
 
 # Sphinx
 docs/_build
+
+# tests
+test*.py

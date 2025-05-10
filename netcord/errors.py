@@ -15,7 +15,7 @@ class NetError(HTTPException):
 class AuthenticationError(NetError):
     def __init__(
         self,
-        detail: str = 'Not authenticated with Discord',
+        detail: str = 'Not authenticated',
         status_code: int = 401
     ):
         super().__init__(status_code=status_code, detail=detail)

@@ -1,7 +1,9 @@
 from httpx import Response
 from urllib.parse import urlencode
+from typing import Optional, Literal
 
 from ._http import HTTPClient
+from .cache import Cache, cache
 from .models import Oauth2Token, User, Guild
 from .errors import AuthenticationError, TokenExchangeError
 
@@ -31,6 +33,8 @@ class Netcord:
 
         self.scopes = tuple(scopes)
         self._scope_str = ' '.join(self.scopes)
+
+        self._cache = Cache(default_ttl=300)  # 5 minutes
 
         self.base_api_url = f'{DISCORD_API_BASE_URL}/{API_VERSION}'
         self._http = HTTPClient(base_url=self.base_api_url)
@@ -118,6 +122,46 @@ class Netcord:
         token = Oauth2Token(**token_data)
         return token
 
+    async def revoke_token(
+        self,
+        token: str,
+        *,
+        token_type_hint: Optional[
+            Literal['access_token', 'refresh_token']
+        ] = None
+    ) -> bool:
+        data = {
+            'client_id': self.client_id,
+            'client_secret': self.client_secret,
+            'token': token,
+        }
+
+        if token_type_hint:
+            data['token_type_hint'] = token_type_hint
+
+        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+        REVOKE_URL = TOKEN_URL + '/revoke'
+        response: Response = await self._http.post(
+            REVOKE_URL, data=data, headers=headers
+        )
+
+        if response.status_code != 200:
+            detail = f'Failed to revoke token: HTTP {response.status_code}'
+
+            try:
+                error_data = response.json()
+                if 'error' in error_data:
+                    error_desc = (error_data.get('error_description')
+                                  or error_data.get('error'))
+                    detail = f'Failed to revoke token: {error_desc}'
+            except Exception:
+                pass
+
+            raise TokenExchangeError(detail, response.status_code)
+
+        return True
+
+    @cache
     async def fetch_user(self, access_token: str) -> User:
         headers = {'Authorization': f'Bearer {access_token}'}
         response: Response = await self._http.get('/users/@me', headers=headers)  # noqa: E501
@@ -128,10 +172,9 @@ class Netcord:
                 response.status_code
             )
 
-        user_data = response.json()
-        user = User(**user_data)
-        return user
+        return User(**response.json())
 
+    @cache
     async def fetch_guilds(self, access_token: str) -> list[Guild]:
         headers = {'Authorization': f'Bearer {access_token}'}
         response: Response = await self._http.get('/users/@me/guilds', headers=headers)  # noqa: E501
@@ -142,10 +185,9 @@ class Netcord:
                 response.status_code
             )
 
-        guilds_data = response.json()
-        guilds = [Guild(**guild) for guild in guilds_data]
-        return guilds
+        return [Guild(**guild) for guild in response.json()]
 
+    @cache
     async def fetch_user_by_id(self, user_id: str) -> User:
         headers = {'Authorization': f'Bot {self.bot_token}'}
         response: Response = await self._http.get(
@@ -158,9 +200,7 @@ class Netcord:
                 response.status_code
             )
 
-        user_data = response.json()
-        user = User(**user_data)
-        return user
+        return User(**response.json())
 
     async def close(self) -> None:
         await self._http.close()

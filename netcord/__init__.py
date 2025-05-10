@@ -1,1 +1,1 @@
-from .auth import Netcord  # noqa: F401
+from .netcord import Netcord  # noqa: F401
