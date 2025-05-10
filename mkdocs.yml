@@ -1,7 +1,7 @@
 site_name: Netcord
 site_description: The Async Discord OAuth2 Toolkit for FastAPI
 site_author: Netrix
-site_url: https://netrix.fun/netcord
+site_url: https://netcord.netrix.fun
 repo_url: https://github.com/netrix-team/netcord
 repo_name: netrix-team/netcord
 
