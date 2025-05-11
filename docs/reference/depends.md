@@ -1,14 +1,9 @@
-from fastapi import Depends
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+# 🔗 Dependency
 
-from .errors import AuthenticationError
+FastAPI dependency for bearer auth.
 
+```python
 http_bearer = HTTPBearer(auto_error=False)
-
-__all__ = (
-    'authenticated'
-)
-
 
 def authenticated(
     header: HTTPAuthorizationCredentials = Depends(http_bearer),
@@ -20,3 +15,4 @@ def authenticated(
         raise AuthenticationError(
             detail='Invalid authentication scheme'
         )
+```

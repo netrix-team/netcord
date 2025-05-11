@@ -26,7 +26,7 @@ client = Netcord(
     client_id='your_client_id',
     client_secret='your_client_secret',
     redirect_uri='https://yourapp.com/callback',
-
+    bot_token='your_bot_token'
 )
 ```
 

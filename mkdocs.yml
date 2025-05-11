@@ -19,8 +19,6 @@ theme:
     accent: indigo
 
   features:
-    - navigation.expand
-    - navigation.footer
     - navigation.instant
     - navigation.sections
     - navigation.tabs
@@ -28,23 +26,105 @@ theme:
     - content.code.copy
     - content.tabs.link
     - content.tooltips
-    - announce.dismiss
-    - versioning.git
 
 extra:
-  version: 2.2.1
+  version: 2.2.2
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/neckker
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/neckkero
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/neckker/
 
 nav:
   - Home: index.md
-  - Guides:
+  - 🚀 Guides:
     - Installation: guides/installation.md
     - Usage: guides/usage.md
+  - 🛠️ Reference:
+    - Caching Utility: reference/cache.md
+    - Dependency: reference/depends.md
+    - Errors: reference/errors.md
+    - Models: reference/models.md
+    - Core: reference/netcord.md
+    - Utilities: reference/utils.md
+  - 📜 Changelog: changelog.md
 
 plugins:
   - search
   - git-revision-date-localized:
       type: date
       strict: false
-    # Required for blog plugin's generated indices
       fallback_to_build_date: true
   - awesome-pages
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+      python:
+        paths:
+          - netcord
+        options:
+          # Headings
+          show_root_heading: true
+          show_root_full_path: false
+          # Docstrings
+          show_if_no_docstring: true
+          # Signatures/annotations
+          show_signature_annotations: true
+          # Other
+          show_bases: false
+
+markdown_extensions:
+  # Built-in
+  - markdown.extensions.abbr:
+  - markdown.extensions.admonition:
+  - markdown.extensions.attr_list:
+  - markdown.extensions.footnotes:
+  - markdown.extensions.md_in_html:
+  - markdown.extensions.meta:
+  - markdown.extensions.tables:
+  - markdown.extensions.toc:
+      permalink: true
+
+  # Extra
+  - mkdocs-click:
+  - pymdownx.arithmatex:
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret:
+  - pymdownx.critic:
+  - pymdownx.details:
+  - pymdownx.emoji:
+      # https://github.com/twitter/twemoji
+      # https://raw.githubusercontent.com/facelessuser/pymdown-extensions/master/pymdownx/twemoji_db.py
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      guess_lang: false
+      linenums_style: pymdownx-inline
+      use_pygments: true
+  - pymdownx.inlinehilite:
+  - pymdownx.keys:
+  - pymdownx.magiclink:
+      repo_url_shortener: true
+      repo_url_shorthand: true
+      social_url_shortener: true
+      social_url_shorthand: true
+      normalize_issue_symbols: true
+      provider: github
+      user: netrix-team
+      repo: netcord
+  - pymdownx.mark:
+  - pymdownx.progressbar:
+  - pymdownx.saneheaders:
+  - pymdownx.smartsymbols:
+  - pymdownx.superfences:
+  - pymdownx.tabbed:
+      alternate_style: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde:

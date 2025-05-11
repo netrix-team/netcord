@@ -20,6 +20,9 @@ class Oauth2Token(BaseModel):
 
     model_config = ConfigDict(extra='ignore')
 
+    def to_dict(self, **kwargs) -> dict:
+        return self.model_dump(mode='json', **kwargs)
+
     @property
     def bearer(self) -> str:
         return f'Bearer {self.access_token}'
@@ -40,6 +43,9 @@ class User(BaseModel):
     verified: Optional[bool] = Field(False)
 
     model_config = ConfigDict(extra='ignore')
+
+    def to_dict(self, **kwargs) -> dict:
+        return self.model_dump(mode='json', **kwargs)
 
     @field_validator('avatar_url', mode='after')
     @classmethod
@@ -78,6 +84,9 @@ class Guild(BaseModel):
     features: Optional[list[str]] = Field(None)
 
     model_config = ConfigDict(extra='ignore')
+
+    def to_dict(self, **kwargs) -> dict:
+        return self.model_dump(mode='json', **kwargs)
 
     @field_validator('icon_url', mode='after')
     @classmethod

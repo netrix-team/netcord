@@ -1,17 +1,24 @@
-# Welcome to MkDocs
+# Netcord
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+Welcome to **Netcord**, the Async Discord OAuth2 Toolkit for FastAPI! 🎉
 
-## Commands
+**Netcord** helps you:
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+- 🔐 **Authenticate** users via OAuth2 with Discord
+- 🔄 **Refresh** and **revoke** tokens effortlessly
+- 🧩 **Fetch** and **cache** user & guild data
+- 🔧 **Integrate** seamlessly into FastAPI routes
 
-## Project layout
+!!! info
+    **Version:** 2.2.2
+    **Docs:** [link](https://netcord.netrix.fun/)  
+    **Repo:** https://github.com/netrix-team/netcord
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+---
+
+## Quick Links
+
+- 🚀 **[Installation](guides/installation.md)**
+- 🔧 **[Usage](guides/usage.md)**
+- 🛠 **[API Reference](reference/netcord.md)**
+- 📜 **[Changelog](https://github.com/netrix-team/netcord/releases/latest)**
