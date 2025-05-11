@@ -1,30 +1,30 @@
 [build-system]
-requires = ["hatchling>=1.14.0"]
-build-backend = "hatchling.build"
+requires = ['hatchling>=1.14.0']
+build-backend = 'hatchling.build'
 
 [project]
-name = "netcord"
-version = "2.2.2"
-description = "Asynchronous Discord OAuth2 library for FastAPI (identify, email, guilds scopes support)"
-requires-python = ">=3.12"
-license = { text = "MIT License" }
-readme = "README.md"
-keywords = ["netcord", "discord", "oauth2", "fastapi", "asyncio", "api"]
+name = 'netcord'
+version = '2.2.3'
+description = 'Asynchronous Discord OAuth2 library for FastAPI (identify, email, guilds scopes support)'
+requires-python = '>=3.12'
+license = { text = 'MIT License' }
+readme = 'README.md'
+keywords = ['netcord', 'discord', 'oauth2', 'fastapi', 'asyncio', 'api']
 authors = [
-    { name = "netrix-team" }
+    { name = 'netrix-team' }
 ]
 classifiers = [
-    "Development Status :: 4 - Beta",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
+    'Development Status :: 4 - Beta',
+    'Intended Audience :: Developers',
+    'License :: OSI Approved :: MIT License',
 
-    "Framework :: FastAPI",
-    "Natural Language :: English",
-    "Topic :: Software Development :: Libraries",
-    "Topic :: Internet :: WWW/HTTP :: Session",
+    'Framework :: FastAPI',
+    'Natural Language :: English',
+    'Topic :: Software Development :: Libraries',
+    'Topic :: Internet :: WWW/HTTP :: Session',
 
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.12",
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.12',
 ]
 
 dependencies = [
@@ -34,5 +34,6 @@ dependencies = [
 ]
 
 [project.urls]
-HomePage = "https://github.com/netrix-team/netcord"
-GitHub = "https://github.com/netrix-team/netcord"
+HomePage = 'https://github.com/netrix-team/netcord'
+GitHub = 'https://github.com/netrix-team/netcord'
+Docs = 'https://netcord.netrix.fun'
