@@ -6,12 +6,12 @@ __all__ = (
 
 
 class HTTPClient(AsyncClient):
-    def __init__(self, base_url: str) -> None:
-        self._client = AsyncClient(base_url=base_url, timeout=10.0)
+    def __init__(self, base_url: str, timeout: float = 10.0) -> None:
+        super().__init__(base_url=base_url, timeout=timeout)
 
     async def _request(self, method: str, url: str, **kwargs) -> Response:
         try:
-            response = await self._client.request(method, url, **kwargs)
+            response = await self.request(method, url, **kwargs)
         except HTTPError as e:
             raise HTTPError(f'HTTP error occurred: {e}')
         except Exception as e:
@@ -35,4 +35,4 @@ class HTTPClient(AsyncClient):
         return await self._request('PATCH', url, **kwargs)
 
     async def close(self) -> None:
-        await self._client.aclose()
+        await self.aclose()
