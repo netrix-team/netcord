@@ -28,7 +28,7 @@ theme:
     - content.tooltips
 
 extra:
-  version: 2.2.4
+  version: 2.2.5
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/neckker

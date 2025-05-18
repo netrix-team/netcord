@@ -166,9 +166,18 @@ class Netcord:
         headers = {'Authorization': f'Bearer {access_token}'}
         response: Response = await self._http.get('/users/@me', headers=headers)  # noqa: E501
 
-        if response.status_code != 200:
+        if response.status_code == 401:
             raise AuthenticationError(
                 'Failed to fetch user info: Unauthorized',
+                response.status_code
+            )
+
+        if response.status_code == 404:
+            return None
+        
+        if response.status_code != 200:
+            raise AuthenticationError(
+                'Unknown error occurred while fetching user info',
                 response.status_code
             )
 
@@ -179,9 +188,18 @@ class Netcord:
         headers = {'Authorization': f'Bearer {access_token}'}
         response: Response = await self._http.get('/users/@me/guilds', headers=headers)  # noqa: E501
 
+        if response.status_code == 401:
+            raise AuthenticationError(
+                'Failed to fetch user info: Unauthorized',
+                response.status_code
+            )
+
+        if response.status_code == 404:
+            return None
+        
         if response.status_code != 200:
             raise AuthenticationError(
-                'Failed to fetch user guilds: Unauthorized or Forbidden',
+                'Unknown error occurred while fetching user info',
                 response.status_code
             )
 
@@ -194,9 +212,18 @@ class Netcord:
             f'/users/{user_id}', headers=headers
         )
 
-        if response.status_code != 200:
+        if response.status_code == 401:
             raise AuthenticationError(
                 'Failed to fetch user info: Unauthorized',
+                response.status_code
+            )
+
+        if response.status_code == 404:
+            return None
+        
+        if response.status_code != 200:
+            raise AuthenticationError(
+                'Unknown error occurred while fetching user info',
                 response.status_code
             )
 

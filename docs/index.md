@@ -10,7 +10,7 @@ Welcome to **Netcord**, the Async Discord OAuth2 Toolkit for FastAPI! 🎉
 - 🔧 **Integrate** seamlessly into FastAPI routes
 
 !!! info
-    **Version:** 2.2.4
+    **Version:** 2.2.5
     **Docs:** [link](https://netcord.netrix.fun/)  
     **Repo:** https://github.com/netrix-team/netcord
 
